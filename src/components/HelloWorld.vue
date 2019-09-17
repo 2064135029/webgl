@@ -1,22 +1,22 @@
 <template>
     <div>
         <div id="container"></div>
-        <van-button type="primary" @click="show = true">
-            设置
-        </van-button>
-        <van-popup :style="{ height: '30%' }" position="top" v-model="show">
-            <van-collapse v-model="activeNames">
-                <van-collapse-item title="标题1" name="1">
-                    <span>焦点</span>
-                    <van-slider v-model="s1" @input="onChange"/>
-                    <span>扩散点</span>
-                    <van-slider v-model="s2" @input="onChange2"/>
-                </van-collapse-item>
-                <van-collapse-item title="标题2" name="2">
-                </van-collapse-item>
-            </van-collapse>
+        <!--<van-button type="primary" @click="show = true">-->
+        <!--设置-->
+        <!--</van-button>-->
+        <!--<van-popup :style="{ height: '30%' }" position="top" v-model="show">-->
+        <!--<van-collapse v-model="activeNames">-->
+        <!--<van-collapse-item title="标题1" name="1">-->
+        <!--<span>焦点</span>-->
+        <!--<van-slider v-model="s1" @input="onChange"/>-->
+        <!--<span>扩散点</span>-->
+        <!--<van-slider v-model="s2" @input="onChange2"/>-->
+        <!--</van-collapse-item>-->
+        <!--<van-collapse-item title="标题2" name="2">-->
+        <!--</van-collapse-item>-->
+        <!--</van-collapse>-->
 
-        </van-popup>
+        <!--</van-popup>-->
     </div>
 </template>
 
@@ -41,7 +41,7 @@
                 camera: null,
                 scene: null,
                 renderer: null,
-                // mesh: null,
+                mesh: null,
                 cameraControls: null,
                 effectController: {
                     shininess: 40.0,
@@ -91,6 +91,7 @@
                 specularColor: new Three.Color(),
                 exporter: null,
                 teapotGeometry: null,
+                gui: null,
             };
         },
         created: function () {
@@ -101,16 +102,16 @@
             })
         },
         methods: {
-            onChange: function (value) {
-                console.log(value);
-                this.effectController.shininess = 4 * this.s1;
-                this.render()
-            },
-            onChange2: function (value) {
-                console.log(value);
-                this.effectController.ka = parseFloat(this.s1) / 100;
-                this.render()
-            },
+            // onChange: function (value) {
+            //     // console.log(value);
+            //     this.effectController.shininess = 4 * this.s1;
+            //     this.render()
+            // },
+            // onChange2: function (value) {
+            //     // console.log(value);
+            //     this.effectController.ka = parseFloat(this.s1) / 100;
+            //     this.render()
+            // },
             init: function () {
                 var container = document.getElementById('container');
                 // body.appendChild(container);
@@ -118,10 +119,11 @@
                 var canvasHeight = window.innerHeight;
                 // CAMERA
                 this.camera = new Three.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 80000);
-                this.camera.position.set(-600, 550, 1300);
+                this.camera.position.set(-600, 550, 2500);
                 // LIGHTS
                 this.ambientLight = new Three.AmbientLight(0x333333);	// 0.2
                 this.light = new Three.DirectionalLight(0xFFFFFF, 1.0);
+
                 // direction is set in GUI
                 // RENDERER
                 this.renderer = new Three.WebGLRenderer({antialias: true});
@@ -137,14 +139,18 @@
                 this.cameraControls.addEventListener('change', this.render);
                 // TEXTURE MAP
                 var textureMap = new Three.TextureLoader().load(require('../assets/textures/uv_grid_opengl.jpg'));
+                // console.log(require('../assets/textures/uv_grid_opengl.jpg'));
                 textureMap.wrapS = textureMap.wrapT = Three.RepeatWrapping;
                 textureMap.anisotropy = 16;
                 // REFLECTION MAP
-                var path = '../assets/textures/cube/skybox/'; // "./assets/textures/cube/skybox/";
+                // var path = '../assets/textures/cube/skybox/'; // "./assets/textures/cube/skybox/";
                 var urls = [
-                    path + "px.jpg", path + "nx.jpg",
-                    path + "py.jpg", path + "ny.jpg",
-                    path + "pz.jpg", path + "nz.jpg"
+                    require("../assets/textures/cube/skybox/px.jpg"),
+                    require("../assets/textures/cube/skybox/nx.jpg"),
+                    require("../assets/textures/cube/skybox/py.jpg"),
+                    require("../assets/textures/cube/skybox/pz.jpg"),
+                    require("../assets/textures/cube/skybox/ny.jpg"),
+                    require("../assets/textures/cube/skybox/nz.jpg"),
                 ];
                 this.textureCube = new Three.CubeTextureLoader().load(urls);
                 // MATERIALS
@@ -175,14 +181,28 @@
                 this.scene.add(this.ambientLight);
                 this.scene.add(this.light);
                 // GUI
-                this.setupGui();
+                if (this.gui === null) {
+                    this.setupGui();
+                }
+
+                let geometry = new Three.BoxGeometry(0.2, 0.2, 0.2)
+                let material = new Three.MeshNormalMaterial()
+                this.mesh = new Three.Mesh(geometry, material)
+                this.scene.add(this.mesh)
+                // var geometry = new Three.TorusKnotBufferGeometry( 3, 1, 256, 32 );
+                // var material = new Three.MeshStandardMaterial( { color: 0x6083c2 } );
+                // this.mesh = new Three.Mesh( geometry, material );
+                // this.scene.add( this.mesh );
+
                 // container.appendChild(this.renderer.domElement)
             },
             animate: function () {
                 requestAnimationFrame(this.animate)
-                this.mesh.rotation.x += 0.01
-                this.mesh.rotation.y += 0.02
+                // this.teapot.rotation.x += 0.01
+                this.teapot.rotation.y += 0.02
                 this.renderer.render(this.scene, this.camera)
+                // this.render()
+                console.log('dddd');
             },
             onWindowResize: function () {
                 var canvasWidth = window.innerWidth;
@@ -191,6 +211,7 @@
                 this.camera.aspect = canvasWidth / canvasHeight;
                 this.camera.updateProjectionMatrix();
                 this.render();
+                // console.log(canvasWidth);
             },
             setupGui: function () {
                 this.effectController = {
@@ -218,40 +239,45 @@
                     nonblinn: false,
                     newShading: "glossy"
                 };
-                // var h;
-                // var gui = new GUI();
-                // // material (attributes)
-                // h = gui.addFolder("Material control");
-                // h.add(this.effectController, "shininess", 1.0, 400.0, 1.0).name("shininess strength").onChange(this.render);
-                // h.add(this.effectController, "kd", 0.0, 1.0, 0.025).name("diffuse strength").onChange(this.render);
-                // h.add(this.effectController, "ks", 0.0, 1.0, 0.025).name("specular strength").onChange(this.render);
-                // h.add(this.effectController, "metallic").onChange(this.render);
-                // // material (color)
-                // h = gui.addFolder("Material color");
-                // h.add(this.effectController, "hue", 0.0, 1.0, 0.025).name("hue").onChange(this.render);
-                // h.add(this.effectController, "saturation", 0.0, 1.0, 0.025).name("saturation").onChange(this.render);
-                // h.add(this.effectController, "lightness", 0.0, 1.0, 0.025).name("lightness").onChange(this.render);
-                // // light (point)
-                // h = gui.addFolder("Lighting");
-                // h.add(this.effectController, "lhue", 0.0, 1.0, 0.025).name("hue").onChange(this.render);
-                // h.add(this.effectController, "lsaturation", 0.0, 1.0, 0.025).name("saturation").onChange(this.render);
-                // h.add(this.effectController, "llightness", 0.0, 1.0, 0.025).name("lightness").onChange(this.render);
-                // h.add(this.effectController, "ka", 0.0, 1.0, 0.025).name("ambient").onChange(this.render);
-                // // light (directional)
-                // h = gui.addFolder("Light direction");
-                // h.add(this.effectController, "lx", -1.0, 1.0, 0.025).name("x").onChange(this.render);
-                // h.add(this.effectController, "ly", -1.0, 1.0, 0.025).name("y").onChange(this.render);
-                // h.add(this.effectController, "lz", -1.0, 1.0, 0.025).name("z").onChange(this.render);
-                // h = gui.addFolder("Tessellation control");
-                // h.add(this.effectController, "newTess", [2, 3, 4, 5, 6, 8, 10, 15, 20, 30, 40, 50]).name("Tessellation Level").onChange(this.render);
-                // h.add(this.effectController, "lid").name("display lid").onChange(this.render);
-                // h.add(this.effectController, "body").name("display body").onChange(this.render);
-                // h.add(this.effectController, "bottom").name("display bottom").onChange(this.render);
-                // h.add(this.effectController, "fitLid").name("snug lid").onChange(this.render);
-                // h.add(this.effectController, "nonblinn").name("original scale").onChange(this.render);
-                // // shading
-                // gui.add(this.effectController, "newShading", ["wireframe", "flat", "smooth", "glossy", "textured", "reflective"]).name("Shading").onChange(this.render);
+                var h;
+                let dd = document.getElementsByClassName('dg ac');
+                dd.innerHTML = '';
+                this.gui = new GUI();
+               //  this.gui.__closeButton.innerHTML = '关闭'
+               // console.log(this.gui);
+                // material (attributes)
+                h = this.gui.addFolder("材质");
+                h.add(this.effectController, "shininess", 1.0, 400.0, 1.0).name("亮度").onChange(this.render);
+                h.add(this.effectController, "kd", 0.0, 1.0, 0.025).name("散光").onChange(this.render);
+                h.add(this.effectController, "ks", 0.0, 1.0, 0.025).name("反射").onChange(this.render);
+                h.add(this.effectController, "metallic").name("是否镀金").onChange(this.render);
+                // material (color)
+                h = this.gui.addFolder("颜色");
+                h.add(this.effectController, "hue", 0.0, 1.0, 0.025).name("色度").onChange(this.render);
+                h.add(this.effectController, "saturation", 0.0, 1.0, 0.025).name("饱和度").onChange(this.render);
+                h.add(this.effectController, "lightness", 0.0, 1.0, 0.025).name("尖锐").onChange(this.render);
+                // light (point)
+                h = this.gui.addFolder("亮度");
+                h.add(this.effectController, "lhue", 0.0, 1.0, 0.025).name("色差").onChange(this.render);
+                h.add(this.effectController, "lsaturation", 0.0, 1.0, 0.025).name("饱和度").onChange(this.render);
+                h.add(this.effectController, "llightness", 0.0, 1.0, 0.025).name("尖锐").onChange(this.render);
+                h.add(this.effectController, "ka", 0.0, 1.0, 0.025).name("光线").onChange(this.render);
+                // light (directional)
+                h = this.gui.addFolder("灯光");
+                h.add(this.effectController, "lx", -1.0, 1.0, 0.025).name("x").onChange(this.render);
+                h.add(this.effectController, "ly", -1.0, 1.0, 0.025).name("y").onChange(this.render);
+                h.add(this.effectController, "lz", -1.0, 1.0, 0.025).name("z").onChange(this.render);
+                h = this.gui.addFolder("布置");
+                h.add(this.effectController, "newTess", [2, 3, 4, 5, 6, 8, 10, 15, 20, 30, 40, 50]).name("圆弧").onChange(this.render);
+                h.add(this.effectController, "lid").name("盖子").onChange(this.render);
+                h.add(this.effectController, "body").name("壶体").onChange(this.render);
+                h.add(this.effectController, "bottom").name("底座").onChange(this.render);
+                h.add(this.effectController, "fitLid").name("贴边").onChange(this.render);
+                h.add(this.effectController, "nonblinn").name("瘦身").onChange(this.render);
+                // shading
+                this.gui.add(this.effectController, "newShading", ["wireframe", "flat", "smooth", "glossy", "textured", "reflective"]).name("阴影").onChange(this.render);
 
+                this.render();
             },
 
             //
@@ -272,6 +298,7 @@
                     this.shading = this.effectController.newShading;
                     this.createNewTeapot();
                 }
+                // console.log('kkkkkkk');
                 // We're a bit lazy here. We could check to see if any material attributes changed and update
                 // only if they have. But, these calls are cheap enough and this is just a demo.
                 this.phongMaterial.shininess = this.effectController.shininess;
@@ -359,7 +386,7 @@
         mounted () {
             this.init()
             // this.setupGui();
-            // this.animate()
+            this.animate()
         }
     };
 
