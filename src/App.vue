@@ -1,15 +1,18 @@
 <template>
   <div id="app">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <!--<HelloWorld msg="Welcome to Your Vue.js App"/>-->
+    <!--<menu-card></menu-card>-->
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+// import HelloWorld from './components/HelloWorld.vue'
+// import menuCard from './components/menu'
 export default {
   name: 'app',
   components: {
-    HelloWorld
+      // menuCard
   }
 }
 </script>
