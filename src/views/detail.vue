@@ -1,28 +1,12 @@
 <template>
     <div>
         <van-nav-bar
-                title="标题"
+                title="三维物体展示"
                 left-text="返回"
                 left-arrow
                 @click-left="onClickLeft"
         />
         <div id="container"></div>
-        <!--<van-button type="primary" @click="show = true">-->
-        <!--设置-->
-        <!--</van-button>-->
-        <!--<van-popup :style="{ height: '30%' }" position="top" v-model="show">-->
-        <!--<van-collapse v-model="activeNames">-->
-        <!--<van-collapse-item title="标题1" name="1">-->
-        <!--<span>焦点</span>-->
-        <!--<van-slider v-model="s1" @input="onChange"/>-->
-        <!--<span>扩散点</span>-->
-        <!--<van-slider v-model="s2" @input="onChange2"/>-->
-        <!--</van-collapse-item>-->
-        <!--<van-collapse-item title="标题2" name="2">-->
-        <!--</van-collapse-item>-->
-        <!--</van-collapse>-->
-
-        <!--</van-popup>-->
     </div>
 </template>
 
@@ -107,19 +91,17 @@
                 // this.render();
             })
         },
+        activated: function(){
+            console.log('ppppppppppppppppp');
+        },
+        destroyed: function(){
+            if (this.gui){
+                this.gui.destroy()
+            }
+        },
         methods: {
-            // onChange: function (value) {
-            //     // console.log(value);
-            //     this.effectController.shininess = 4 * this.s1;
-            //     this.render()
-            // },
-            // onChange2: function (value) {
-            //     // console.log(value);
-            //     this.effectController.ka = parseFloat(this.s1) / 100;
-            //     this.render()
-            // },
-            onClickLeft: function(){
-
+            onClickLeft: function () {
+                this.$router.go(-1);
             },
             init: function () {
                 var container = document.getElementById('container');
@@ -194,14 +176,6 @@
                     this.setupGui();
                 }
 
-                let geometry = new Three.BoxGeometry(0.2, 0.2, 0.2)
-                let material = new Three.MeshNormalMaterial()
-                this.mesh = new Three.Mesh(geometry, material)
-                this.scene.add(this.mesh)
-                // var geometry = new Three.TorusKnotBufferGeometry( 3, 1, 256, 32 );
-                // var material = new Three.MeshStandardMaterial( { color: 0x6083c2 } );
-                // this.mesh = new Three.Mesh( geometry, material );
-                // this.scene.add( this.mesh );
 
                 // container.appendChild(this.renderer.domElement)
             },
@@ -252,9 +226,10 @@
                 let dd = document.getElementsByClassName('dg ac');
                 dd.innerHTML = '';
                 this.gui = new GUI();
-               //  this.gui.__closeButton.innerHTML = '关闭'
-               // console.log(this.gui);
+                //  this.gui.__closeButton.innerHTML = '关闭'
+                // console.log(this.gui);
                 // material (attributes)
+                // this.gui.addClass({marginTop: '50px'});
                 h = this.gui.addFolder("材质");
                 h.add(this.effectController, "shininess", 1.0, 400.0, 1.0).name("亮度").onChange(this.render);
                 h.add(this.effectController, "kd", 0.0, 1.0, 0.025).name("散光").onChange(this.render);
@@ -402,8 +377,13 @@
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-    #container {
-        height: 400px;
+<style>
+    .dg.ac {
+        position: fixed;
+        top: 50px !important;
+        left: 0;
+        right: 0;
+        height: 0;
+        z-index: 0;
     }
 </style>

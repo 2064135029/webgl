@@ -5,11 +5,12 @@
         />
         <van-card
                 num="2"
-                tag="标签"
+                tag="新品"
                 price="2.00"
                 desc="描述信息"
                 title="商品标题"
                 thumb="https://img.yzcdn.cn/vant/t-thirt.jpg"
+                @click-thumb="clickThumb"
                 origin-price="10.00"
         />
     </div>
@@ -17,7 +18,13 @@
 
 <script>
     export default {
-        name: "menu"
+        name: "menu",
+        methods: {
+            // 点击图片
+            clickThumb: function () {
+                this.$router.push("detail")
+            }
+        }
     }
 </script>
 
