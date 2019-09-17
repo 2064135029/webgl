@@ -82,6 +82,7 @@
                 exporter: null,
                 teapotGeometry: null,
                 gui: null,
+                timer: null,
             };
         },
         created: function () {
@@ -91,13 +92,14 @@
                 // this.render();
             })
         },
-        activated: function(){
+        activated: function () {
             console.log('ppppppppppppppppp');
         },
-        destroyed: function(){
-            if (this.gui){
+        destroyed: function () {
+            if (this.gui) {
                 this.gui.destroy()
             }
+            cancelAnimationFrame(this.timer)
         },
         methods: {
             onClickLeft: function () {
@@ -109,7 +111,7 @@
                 var canvasWidth = window.innerWidth;
                 var canvasHeight = window.innerHeight;
                 // CAMERA
-                this.camera = new Three.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 80000);
+                this.camera = new Three.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 8000);
                 this.camera.position.set(-600, 550, 2500);
                 // LIGHTS
                 this.ambientLight = new Three.AmbientLight(0x333333);	// 0.2
@@ -180,7 +182,7 @@
                 // container.appendChild(this.renderer.domElement)
             },
             animate: function () {
-                requestAnimationFrame(this.animate)
+               this.timer = requestAnimationFrame(this.animate)
                 // this.teapot.rotation.x += 0.01
                 this.teapot.rotation.y += 0.02
                 this.renderer.render(this.scene, this.camera)

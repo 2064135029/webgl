@@ -38,6 +38,16 @@ const router = new Router({
                 keepAlive: false
             }
         },
+        {
+            path: '/model',
+            name: 'model',
+            title: '商品详情',
+            component: () => import('@/views/model.vue'),
+            meta: {
+                title: '商品展示',
+                keepAlive: false
+            }
+        },
     ]
 });
 

@@ -4,7 +4,8 @@ import Vant from 'vant';
 import 'vant/lib/index.css';
 import router from './router';
 import store from './store';
-
+// import 'style-loader!css-loader!./style.css';
+// require("style-loader!css-loader!");
 Vue.config.productionTip = false
 Vue.use(Vant);
 new Vue({

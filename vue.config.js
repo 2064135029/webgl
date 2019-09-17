@@ -1,4 +1,3 @@
-
 // const ThreeExamples = require('import-three-examples')
 module.exports = {
     /** 区分打包环境与开发环境
@@ -24,23 +23,15 @@ module.exports = {
 
     productionSourceMap: false, // 调整内部的webpack配置. // see https://github.com/vuejs/vue-cli/blob/dev/docs/webpack.md
     // chainWebpack: () => {},
-    configureWebpack: () => {}, // CSS 相关选项
+    configureWebpack: () => {
+
+    }, // CSS 相关选项
     chainWebpack: config => {
-        // ThreeExamples.forEach((v) => {
-        //     if (~v.use.indexOf('imports')) {
-        //         config.module
-        //             .rule(`${v.test}_i`)
-        //             .test(require.resolve(v.test))
-        //             .use(v.use)
-        //             .loader(v.use)
-        //     } else {
-        //         config.module
-        //             .rule(`${v.test}_e`)
-        //             .test(require.resolve(v.test))
-        //             .use(v.use)
-        //             .loader(v.use)
-        //     }
-        // })
+        config.module
+            .rule('obj')
+            .test(/\.(fbx|obj)$/)
+            .use('file-loader')
+            .loader('file-loader')
     },
     css: {
         // 将组件内部的css提取到一个单独的css文件（只用在生产环境）
@@ -48,7 +39,7 @@ module.exports = {
         extract: true, // 允许生成 CSS source maps?
         sourceMap: false, // pass custom options to pre-processor loaders. e.g. to pass options to // sass-loader, use { sass: { ... } }
         loaderOptions: {}, // Enable CSS modules for all css / pre-processor files. // This option does not affect *.vue files.
-        modules: false
+        modules: false,
     }, // use thread-loader for babel & TS in production build // enabled by default if the machine has more than 1 cores
 
     parallel: require("os").cpus().length > 1, // PWA 插件相关配置 // see https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-pwa
